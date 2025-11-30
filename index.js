@@ -13,7 +13,5 @@ console.log("Info Hash:", torrentParser.infoHash(torrent).toString('hex'));
 const sizeBytes = torrentParser.size(torrent);
 console.log("Total Size:", sizeBytes, "bytes");
 
-const seedOnly = false;
-download(torrent, torrent.info.name, seedOnly);
 
 
