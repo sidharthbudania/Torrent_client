@@ -3,6 +3,7 @@
 const fs = require('fs');
 const bencode = require('bencode');
 const crypto = require('crypto');
+const bignum = require('bignum');
 
 module.exports.BLOCK_LEN = Math.pow(2, 14);
 
@@ -17,26 +18,21 @@ module.exports.infoHash = torrent => {
 
 module.exports.size = torrent => {
   const size = torrent.info.files ?
-    torrent.info.files.map(file => BigInt(file.length)).reduce((a, b) => a + b) :
-    BigInt(torrent.info.length);
+    torrent.info.files.map(file => file.length).reduce((a, b) => a + b) :
+    torrent.info.length;
 
-  return size; 
+  return bignum.toBuffer(size, {size: 8});
 };
 
 module.exports.pieceLen = (torrent, pieceIndex) => {
-  const totalLength = this.size(torrent);
-  const pieceLength = BigInt(torrent.info['piece length']);
+  const totalLength = bignum.fromBuffer(this.size(torrent)).toNumber();
+  const pieceLength = torrent.info['piece length'];
 
   const lastPieceLength = totalLength % pieceLength;
-  const lastPieceIndex = totalLength / pieceLength;
+  const lastPieceIndex = Math.floor(totalLength / pieceLength);
 
-  if (BigInt(pieceIndex) === lastPieceIndex) {
-    return Number(lastPieceLength);
-  }
-  
-  return Number(pieceLength);
+  return lastPieceIndex === pieceIndex ? lastPieceLength : pieceLength;
 };
-
 
 module.exports.blocksPerPiece = (torrent, pieceIndex) => {
   const pieceLength = this.pieceLen(torrent, pieceIndex);

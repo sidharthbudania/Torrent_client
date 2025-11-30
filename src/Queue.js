@@ -1,5 +1,3 @@
-
-
 'use strict';
 
 const tp = require('./torrent-parser');
@@ -28,21 +26,6 @@ module.exports = class {
   peek() { return this._queue[0]; }
 
   length() { return this._queue.length; }
-
-  getAll() {
-    return [...this._queue];
-  }
-
-  remove(pieceBlock) {
-    const idx = this._queue.findIndex(pb =>
-      pb.index === pieceBlock.index &&
-      pb.begin === pieceBlock.begin &&
-      pb.length === pieceBlock.length
-    );
-    if (idx !== -1) {
-      this._queue.splice(idx, 1);
-    }
-  }
 };
 
 
